@@ -1,5 +1,7 @@
-import { styled } from "styled-components"
-import search from './search.png'
+import { useContext, useRef } from "react";
+import { styled } from "styled-components";
+import search from './search.png';
+import { GlobalContext } from "../../context/GlobalContext";
 
 const ContainerEstilizado = styled.div`
     position: relative;
@@ -21,7 +23,7 @@ const CampoTextoEstilizado = styled.input`
     font-size: 20px;
     line-height: 20px;
     outline: none;
-`
+`;
 
 
 const IconoLupa = styled.img`
@@ -32,13 +34,22 @@ const IconoLupa = styled.img`
     height: 38px;
 `;
 
-const CampoTexto = ({ setFiltro }) => {
+const CampoTexto = () => {
+    const cajaFiltro = useRef(null);
+    const { dispatch } = useContext(GlobalContext);
+    
     return (
         <ContainerEstilizado>
-            <CampoTextoEstilizado onChange={(evento) => {setFiltro(evento.target.value)}} type="text" placeholder="¿Que estas buscando?" />
-            <IconoLupa src={search} alt="ícono de lupa" />
+            <CampoTextoEstilizado ref={cajaFiltro} type="text" placeholder="¿Que estas buscando?" />
+            <IconoLupa 
+                src={search} 
+                alt="ícono de lupa" 
+                onClick={ () => {
+                    dispatch({ type: 'SET_FILTRO', payload: cajaFiltro.current.value }) 
+                }} 
+            />
         </ContainerEstilizado>
-    )
-}
+    );
+};
 
-export default CampoTexto
+export default CampoTexto;

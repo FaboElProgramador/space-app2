@@ -3,6 +3,9 @@ import Titulo from "../Titulo"
 import Populares from "./Populares"
 import Tag from "./Tags"
 import Imagen from "./Imagen"
+import { useContext } from "react"
+import { GlobalContext } from "../../context/GlobalContext"
+import Cargando from "../Cargando"
 
 const GaleriaContainer = styled.div`
     display: flex;
@@ -20,25 +23,32 @@ const ImagenesContainer = styled.section`
     gap: 24px;
 `
 
-const Galeria = ({ fotos = [], setTag, alSeleccionarFoto, alAlternarFavorito }) => {
+const Galeria = ({ setTag }) => {
+
+    const { state } = useContext(GlobalContext);
+
     return (
-        <>
-            <Tag setTag={setTag} />
-            <GaleriaContainer>
-                <SeccionFluida>
-                    <Titulo>Navegue por la galeria</Titulo>
-                    <ImagenesContainer>
-                        {fotos.map(foto => <Imagen
-                        alAlternarFavorito= {alAlternarFavorito}
-                        alSolicitarZoom={alSeleccionarFoto}
-                            key={foto.id}
-                            foto={foto} />)
-                        }
-                    </ImagenesContainer>
-                </SeccionFluida>
-                <Populares />
-            </GaleriaContainer>
-        </>
+        state.fotosDeGaleria.length == 0 ?
+            <Cargando></Cargando> :
+            <>
+                <Tag setTag={setTag} />
+                <GaleriaContainer>
+                    <SeccionFluida>
+                        <Titulo>Navegue por la galeria</Titulo>
+                        <ImagenesContainer>
+                            {state.fotosDeGaleria.filter(foto => {
+                                return state.filtro == '' || foto.titulo.toLocaleLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "")
+                                    .includes(state.filtro.toLocaleLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, ""))
+                            })
+                                .map(foto => <Imagen
+                                    key={foto.id}
+                                    foto={foto} />)
+                            }
+                        </ImagenesContainer>
+                    </SeccionFluida>
+                    <Populares />
+                </GaleriaContainer>
+            </>
     )
 }
 
